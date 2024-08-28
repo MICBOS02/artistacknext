@@ -1,28 +1,35 @@
-// Supabase client configureren
-const supabaseUrl = 'https://okmqlmletbfohewbdwnh.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbXFsbWxldGJmb2hld2Jkd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ4NzQ3MzUsImV4cCI6MjA0MDQ1MDczNX0.vXtGsB5d4i7asrK85igm15em-PgoUz9zA1Xrv0LM2Is';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Simuleer de bestaande gebruikersdatabase
+const users = {
+    "michiel@artistack.be": {
+        password: "Bacjes1!",
+        name: "Michiel",
+        dashboardInfo: "This is Michiel's dashboard data."
+    },
+    "testuser@artistack.be": {
+        password: "Test123!",
+        name: "Test User",
+        dashboardInfo: "This is Test User's dashboard data."
+    }
+};
 
-async function handleLogin(event) {
+// Handle login functie
+function handleLogin(event) {
     event.preventDefault(); // Voorkom dat het formulier wordt ingediend
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Probeer in te loggen via Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-    });
+    // Zoek de gebruiker in de gesimuleerde database
+    const user = users[email];
 
-    if (error) {
-        document.getElementById('error-message').style.display = 'block';
-        console.error('Login error:', error.message);
+    if (user && user.password === password) {
+        // Sla de gebruikersinformatie op in localStorage
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
+
+        // Redirect naar index.html
+        window.location.href = 'index.html';
     } else {
-        console.log('User logged in:', data);
-        // Sla de Supabase-gebruiker op in localStorage en ga naar index.html
-        localStorage.setItem('currentLoggedInUserID', data.user.id);
-        window.location.href = "index.html";
+        document.getElementById('error-message').style.display = 'block';
     }
 }
 
